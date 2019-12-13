@@ -29,13 +29,18 @@ accuracy, F-measure, sensitivity, specificity, precision, area under the ROC cur
 
     Try a grid of values and choose the best value(s) that maximize the overall cross-validation accuracy.
 
-    • For k-NN you can choose 1 5 10 15 ... 100 (with increments of 5 after k=5)
-    • For number of trees in random forest you can try 5 10 25 50 75 100 150 200 250 300 350 400 450 500
-    • For number of clusters in RBF network you can try: 2 3 4 5 6 7 8 9 10 15 20 25 30 35 40 45 50
-    • For the number of iterations in Adaboost you can try 5 10 15 20 25 30 40 50 75 100 125 150 175 200
-    • To optimize C and gamma parameters of the SVM you can consider the following parameter grid:
-    C ∈ {2 %& , 2 %( , 2 %) , 2 ) , 2 ( , 2 & , ... 2 )( , 2 )& }
-    γ ∈ {2 %)& , 2 %)( , ... , 2 %) , 2 ) , 2 ( , 2 & }
+    For k-NN you can choose 1 5 10 15 ... 100 (with increments of 5 after k=5)
+    
+    For number of trees in random forest you can try 5 10 25 50 75 100 150 200 250 300 350 400 450 500
+    
+    For number of clusters in RBF network you can try: 2 3 4 5 6 7 8 9 10 15 20 25 30 35 40 45 50
+    
+    For the number of iterations in Adaboost you can try 5 10 15 20 25 30 40 50 75 100 125 150 175 200
+    
+    To optimize C and gamma parameters of the SVM you can consider the following parameter grid:
+    
+    C ∈ {2^-5 , 2^-3 , 2^-1 , 2^1 , 2^3, 2^5 , ... 2^13 , 2^15 }
+    γ ∈ {2^-15 , 2^-13 , ... , 2^-1 , 2^1 , 2^3 , 2^5}
     
     There are a total of 11 values for the C parameter and 11 values for the gamma parameter (a total of 121 values to consider for the (C, gamma) pair).
     

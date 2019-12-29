@@ -8,7 +8,7 @@ is occupied.
 Install requirements:
 
 ```
-$ pip3 install -r ./docs/requirements.txt
+$ pip3 install -r ./requirements.txt
 ```
 
 

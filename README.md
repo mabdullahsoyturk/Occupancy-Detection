@@ -20,6 +20,7 @@ $ python3 occupancy_detection.py
 
 ## TODO:
 
+- Add summary of results.
 - State which models have been used in the literature so far.
 - Compare these methods with the models that have been used in the literature.
 - Suggest ideas for improvement.

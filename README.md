@@ -20,6 +20,6 @@ $ python3 occupancy_detection.py
 
 ## TODO:
 
-- State which models have been sed in the literature so far.
+- State which models have been used in the literature so far.
 - Compare these methods with the models that have been used in the literature.
 - Suggest ideas for improvement.

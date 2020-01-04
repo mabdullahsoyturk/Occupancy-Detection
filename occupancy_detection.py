@@ -5,9 +5,7 @@ from __future__ import division
 import numpy as np
 import pandas as pd
 
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import StratifiedKFold
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 
 from sklearn.preprocessing import MinMaxScaler
 
@@ -16,41 +14,27 @@ import seaborn as sns
 sns.set()
 
 import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore")
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC, LinearSVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from mlxtend.classifier import StackingClassifier
 
 from sklearn.pipeline import make_pipeline
 
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import roc_curve
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import matthews_corrcoef
-from sklearn.metrics import make_scorer
+from sklearn.metrics import accuracy_score,f1_score,recall_score,precision_score, roc_auc_score
+from sklearn.metrics import roc_curve, average_precision_score, matthews_corrcoef, make_scorer
 from sklearn.metrics import confusion_matrix
 
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import SelectKBest, SelectPercentile, chi2, f_classif
-from sklearn.feature_selection import SelectFromModel
-from sklearn.feature_selection import RFECV
 
-
-# ### 1. Download the dataset(s) for your project. 
-# If a train set and a test set are not already available, 
-# randomly split the dataset into a train and a test set using stratified sampling 
-# so that 80% of the samples go to train set and 20% to test set.
-# Data was retrieved from: https://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+
+############# START OF QUESTION 1 #############
+print("Start of question 1\n\n")
 
 data = pd.read_csv("data.csv")
 
@@ -59,23 +43,18 @@ X = data.loc[:, data.columns != 'Occupancy']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, stratify=y, random_state=42)
 
+print("\n\nEnd of question 1\n\n")
 
-# ### 2. Randomly split your train set into a validation and a new train set 
-# (called train set 2) such that the validation set contains 1/5 of the samples in 
-# original train set and the train set 2 contains the remaining. 
-# Use stratified sampling to assign features to train set 2 and validation set. 
-# This should ensure that your validation set contains samples from both classes with 
-# equal proportions
+############# START OF QUESTION 2 #############
+print("Start of question 2\n\n")
 
 X_train_two, X_validation, y_train_two, y_validation = train_test_split(X_train, y_train, test_size=0.20, 
                                                                         stratify=y_train,random_state=42)
 
+print("\n\nEnd of question 2\n\n")
 
-# ### 3. Normalize features in your train set 2 and validation set using min-max 
-# scaling to interval [0,1]. For this purpose you can first normalize features in 
-# your train set 2 and use the same scaling coefficients to normalize validation set. 
-# Save the normalized versions as separate files. Repeat normalizing your original train set 
-# and use the same normalization coefficients to normalize the two test sets.
+############# START OF QUESTION 3 #############
+print("Start of question 3\n\n")
 
 scaler = MinMaxScaler()
 
@@ -91,10 +70,10 @@ normalized_x_train = scaler.transform(X_train)
 normalized_x_test = scaler.transform(X_test)
 normalized_x_validation_with_orig = scaler.transform(X_validation)
 
+print("\n\nEnd of question 3\n\n")
 
-# ### 4. Perform a 10-fold cross-validation experiment for the random forest classifier 
-# on normalized and unnormalized versions of train set 2. You can set the number of trees 
-# to 100. Do you get better accuracy when you perform data normalization?
+############# START OF QUESTION 4 #############
+print("Start of question 4\n\n")
 
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train_two, y_train_two)
@@ -111,25 +90,10 @@ else:
     print("Yes, I did. Unnormalized Accuracy: {}, Normalized Accuracy: {}"
           .format(unnormalized_accuracy,normalized_accuracy))
 
+print("\n\nEnd of question 4\n\n")
 
-# ### 5. Perform a 10-fold cross-validation experiment on train set 2 that corresponds to 
-# the best performing normalization strategy (i.e. normalized or unnormalized) for the 
-# following classifiers: 
-# 
-# Logistic regression
-# k-nearest neighbor (with k=1)
-# Naïve Bayes
-# Decision tree
-# Random forest (number of trees=100)
-# SVM (RBF kernel C=1.0 gamma=0.125)
-# RBF network (number of clusters = 3)
-# Adaboost (number of iterations=10)
-# 
-# You can use default values for other hyper-parameters of the classifiers
-# Report the following accuracy measures for each of these classifiers: overall
-# accuracy, F-measure, sensitivity, specificity, precision, area under the ROC curve,
-# area under the precision recall curve, MCC scores. These will be cross-validation
-# accuracies.
+############# START OF QUESTION 5 #############
+print("Start of question 5\n\n")
 
 models = [
     ("Logistic Regression",LogisticRegression(random_state=42)),
@@ -177,12 +141,10 @@ print("\nNormalized Results:\n")
 for name,model in models:
     dump_metrics(normalized_x_train_two, y_train_two, name, model)
 
+print("\n\nEnd of question 5\n\n")
 
-# ### 6. Use three feature selection methods to select feature subsets on train set 2 
-# and compute accuracy measures in step 5 for all the classifiers. Repeat for normalized 
-# version of train set 2. Do you get improvement in accuracy when you perform feature 
-# selection or is it better to use all of the features? Which feature selection strategy 
-# gives the best accuracy?
+############# START OF QUESTION 6 #############
+print("Start of question 6\n\n")
 
 selectors = [
     ("VarianceThreshold Selector1", VarianceThreshold(threshold=0.1)), # First selector. Threshold was optimized beforehand.
@@ -204,37 +166,10 @@ for selector_name,selector in selectors:
 
 print("While it is possible get improvement for some models such as Naive Bayes, it is better to use all of the features for the most accurate model which is K-Nearest Neighbour.")
 
-# ### 7. Choose the version of train set 2 that contains the optimum feature set you found
-#  in step 6 and the data for the best normalization strategy. Optimize the following 
-# hyperparameters:
-# 
-# k parameter in k-NN
-# number of trees in random forest
-# Number of clusters in RBF network
-# Number of iterations in Adaboost
-# C, gamma parameter in SVM
-# 
-# Try a grid of values and choose the best value(s) that maximize the overall cross validation 
-# accuracy.
-# 
-# •For k-NN you can choose 1 5 10 15 ... 100 (with increments of 5 after k=5)
-# •For number of trees in random forest you can try 5 10 25 50 75 100 150 200 250 300 350 400 450 500
-# •For number of clusters in RBF network you can try: 2 3 4 5 6 7 8 9 10 15 20 25 30 35 40 45 50
-# •For the number of iterations in Adaboost you can try 5 10 15 20 25 30 40 50 75 100 125 150 175 200
-# 
-# To optimize C and gamma parameters of the SVM you can consider the
-# following parameter grid:
-# 
-# C ∈ {2^-5, 2^-3, 2^-1, 2^1, 2^3, 2^5, ... 2^13, 2^15}
-# γ ∈ {2^-15, 2^-13, ... , 2^-1, 2^1, 2^3, 2^5}
-# 
-# There are a total of 11 values for the C parameter and 11 values for the 
-# gamma parameter (a total of 121 values to consider for the (C, gamma) pair).
-# 
-# Report the best cross-validation accuracies and optimum parameter values you found.
-# 
-# Compute predictions on the validation set using the models trained by optimum
-# hyper-parameters. Report the same accuracy measures as in step 5.
+print("\n\nEnd of question 6\n\n")
+
+############# START OF QUESTION 7 #############
+print("Start of question 7\n\n")
 
 name, selector = selectors[0]
 
@@ -247,6 +182,8 @@ hyper_parameters = {
     "AdaBoostClassifier": [5,10,15,20,25,30,40,50,75,100,125,150,175,200],
     "Support Vector Machine": ([2**i for i in range(-5,16,2)], [2**i for i in range(-15,6,2)])
 }
+
+opt_params = dict()
 
 for model_name, parameters in hyper_parameters.items():
     model = None
@@ -262,6 +199,7 @@ for model_name, parameters in hyper_parameters.items():
             if accuracy > optimum_accuracy:
                 optimum_accuracy = accuracy
                 optimum_parameters = "n_neighbors=" + str(parameter)
+                opt_params["n_neighbors"] = parameter
     elif model_name == "Random Forest":
         for parameter in parameters:
             print("n_estimators: {}".format(parameter))
@@ -271,6 +209,7 @@ for model_name, parameters in hyper_parameters.items():
             if accuracy > optimum_accuracy:
                 optimum_accuracy = accuracy
                 optimum_parameters = "n_estimators=" + str(parameter)
+                opt_params["rf_estimators"] = parameter
     elif model_name == "Support Vector Machine":
         C_values = parameters[0]
         gamma_values = parameters[1]
@@ -284,6 +223,8 @@ for model_name, parameters in hyper_parameters.items():
                 if accuracy > optimum_accuracy:
                     optimum_accuracy = accuracy
                     optimum_parameters = "C:" + str(C) + ", " + "gamma:" + str(gamma)
+                    opt_params["svm_c"] = C
+                    opt_params["svm_gamma"] = gamma
     elif model_name == "AdaBoostClassifier":
         for parameter in parameters:
             print("n_estimators: {}".format(parameter))
@@ -293,11 +234,32 @@ for model_name, parameters in hyper_parameters.items():
             if accuracy > optimum_accuracy:
                 optimum_accuracy = accuracy
                 optimum_parameters = "n_estimators=" + str(parameter)
+                opt_params["ab_estimators"] = parameter
     
     print("Optimum Accuracy for {}: {}".format(model_name, optimum_accuracy))
     print("Optimum Parameters:")
     print(optimum_parameters + "\n\n")
 
+classifiers = [
+    ("K-Nearest Neighbour",KNeighborsClassifier(n_neighbors=opt_params["n_neighbors"])),
+    ("Random Forest",RandomForestClassifier(n_estimators=opt_params["rf_estimators"], random_state=42)),
+    ("Support Vector Machine",SVC(kernel="rbf", C=opt_params["svm_c"],gamma=opt_params["svm_gamma"], random_state=42)),
+    ("AdaBoostClassifier",AdaBoostClassifier(n_estimators=opt_params["ab_estimators"], random_state=42))
+]
+
+for name,model in classifiers:
+    model.fit(optimum_normalized_x_train_two, y_train_two)
+    preds = model.predict(X_validation)
+
+    print("Accuracy of {} with optimal hyperparameters on validation set: {}".format(name, accuracy_score(y_validation, preds)))
+    print("F-Score of {} with optimal hyperparameters on validation set: {}".format(name, f1_score(y_validation, preds)))
+    print("Sensitivity of {} with optimal hyperparameters on validation set: {}".format(name, recall_score(y_validation, preds)))
+    print("Specificity of {} with optimal hyperparameters on validation set: {}".format(name, recall_score(y_validation, preds,pos_label=0)))
+    print("Precision of {} with optimal hyperparameters on validation set: {}".format(name, precision_score(y_validation, preds)))
+    print("ROC-Auc Score of {} with optimal hyperparameters on validation set: {}".format(name, roc_auc_score(y_validation, preds)))
+    print("MCC of {} with optimal hyperparameters on validation set: {}".format(name, matthews_corrcoef(y_validation, preds)))
+
+print("\n\nEnd of question 7\n\n")
 
 # ### 8. Implement a stacking ensemble, which combines the best performing classifiers 
 # obtained in step 7 by a meta-learner (which can be logistic regression). 
@@ -306,13 +268,6 @@ for model_name, parameters in hyper_parameters.items():
 # Perform cross-validation and report the same accuracy measures as in step 5. 
 # Then train the model on the train set 2 and test on validation set. 
 # Report the accuracy measures on validation data.
-
-classifiers = [
-    AdaBoostClassifier(n_estimators=200, random_state=42),
-    SVC(kernel="rbf", C=512,gamma=32, probability=True, random_state=42),
-    KNeighborsClassifier(n_neighbors=1),
-    RandomForestClassifier(n_estimators=100, random_state=42)
-]
 
 lr = LogisticRegression(random_state=42)
 

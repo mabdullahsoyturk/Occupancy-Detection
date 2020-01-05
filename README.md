@@ -20,7 +20,8 @@ $ python3 occupancy_detection.py
 
 ## TODO:
 
-- Add RBF Network model.
+- Add Linear Discriminant Analysis.
+- Add Gradient Boosting Machine.
 - Add summary of results.
 - State which models have been used in the literature so far.
 - Compare these methods with the models that have been used in the literature.

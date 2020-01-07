@@ -13,6 +13,7 @@ The models that were used:
 * Support Vector Machine
 * Linear Discriminant Analysis
 * AdaBoost
+* Stacking Classifier
 
 ## Installation
 

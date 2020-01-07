@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 
 from __future__ import division
 import numpy as np
@@ -44,9 +40,6 @@ from sklearn.feature_selection import SelectKBest,chi2, f_classif, mutual_info_c
 # 
 # ### 2. Randomly split your train set into a validation and a new train set (called train set 2) such that the validation set contains 1/5 of the samples in original train set and the train set 2 contains the remaining. Use stratified sampling to assign features to train set 2 and validation set. This should ensure that your validation set contains samples from both classes (i.e. ciliary and non-ciliary with equal proportions)
 
-# In[2]:
-
-
 train_data = pd.read_csv("datatraining.csv")
 
 y_train = train_data['Occupancy']
@@ -67,9 +60,6 @@ X_test2 = test_data2.loc[:, test_data2.columns != 'Occupancy']
 
 # ### 3. Normalize features in your train set 2 and validation set using min-max scaling to interval [0,1]. For this purpose you can first normalize features in your train set 2 and use the same scaling coefficients to normalize validation set. Save the normalized versions as separate files. Repeat normalizing your original train set and use the same normalization coefficients to normalize the two test sets.
 
-# In[3]:
-
-
 scaler = MinMaxScaler()
 
 scaler.fit(X_train_two)
@@ -87,9 +77,6 @@ normalized_x_validation_with_orig = scaler.transform(X_validation)
 
 
 # ### 4. Perform a 10-fold cross-validation experiment for the random forest classifier on normalized and unnormalized versions of train set 2. You can set the number of trees to 100. Do you get better accuracy when you perform data normalization?
-
-# In[4]:
-
 
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 kfold = StratifiedKFold(n_splits=10, random_state=42)
@@ -128,9 +115,6 @@ else:
 # accuracy, F-measure, sensitivity, specificity, precision, area under the ROC curve,
 # area under the precision recall curve, MCC scores. These will be cross-validation
 # accuracies.
-
-# In[5]:
-
 
 models = [
     ("Logistic Regression",LogisticRegression(random_state=42)),
@@ -180,9 +164,6 @@ for name,model in models:
 
 
 # ### 6. Use three feature selection methods to select feature subsets on train set 2 and compute accuracy measures in step 5 for all the classifiers. Repeat for normalized version of train set 2. Do you get improvement in accuracy when you perform feature selection or is it better to use all of the features? Which feature selection strategy gives the best accuracy?
-
-# In[6]:
-
 
 for name, model in models:
     selectors = [
@@ -243,11 +224,9 @@ print("SelectKBest that uses chi2 with 4 features gave the best accuracy.")
 # Compute predictions on the validation set using the models trained by optimum
 # hyper-parameters. Report the same accuracy measures as in step 5.
 
-# In[7]:
-
-
 best_selector = SelectKBest(chi2,k=4)
-optimum_x_train_two = best_selector.fit_transform(X_train_two, y=y_train_two)
+best_selector.fit(normalized_x_train_two, y=y_train_two)
+optimum_x_train_two = best_selector.transform(normalized_x_train_two)
 
 hyper_parameters = {
     "K-Nearest Neighbour": [1] + [i*5 for i in range(1,21)],
@@ -313,9 +292,6 @@ for model_name, parameters in hyper_parameters.items():
     print("Optimum Parameters:{}\n\n".format(optimum_parameters))
 
 
-# In[9]:
-
-
 classifiers = [
     ("K-Nearest Neighbour",KNeighborsClassifier(n_neighbors=opt_params["n_neighbors"])),
     ("Random Forest",RandomForestClassifier(n_estimators=opt_params["rf_estimators"], random_state=42)),
@@ -333,18 +309,16 @@ def dump_metrics_without_cv(features, label, validation, name, model):
     print("Specificity of {} with optimal hyperparameters on validation set: {}".format(name, recall_score(y_validation, preds,pos_label=0)))
     print("Precision of {} with optimal hyperparameters on validation set: {}".format(name, precision_score(y_validation, preds)))
     print("ROC-Auc Score of {} with optimal hyperparameters on validation set: {}".format(name, roc_auc_score(y_validation, preds)))
+    print("Precision-Recall Score of {} with optimal hyperparameters on validation set: {}".format(name, average_precision_score(y_validation, preds)))
     print("MCC of {} with optimal hyperparameters on validation set: {}\n\n".format(name, matthews_corrcoef(y_validation, preds)))
 
-optimum_x_validation = best_selector.fit_transform(X_validation, y=y_validation)
+optimum_x_validation = best_selector.transform(normalized_x_validation_train_two)
     
 for name,model in classifiers:
     dump_metrics_without_cv(optimum_x_train_two, y_train_two, optimum_x_validation, name, model)
 
 
 # ### 8. Implement a stacking ensemble, which combines the best performing classifiers obtained in step 7 by a meta-learner (which can be logistic regression). Here you will use the optimum hyper-parameters you found in step 7 to train the models you selected in stacking. You can try different combinations of classifiers for this purpose. Perform cross-validation and report the same accuracy measures as in step 5. Then train the model on the train set 2 and test on validation set. Report the accuracy measures on validation data.
-
-# In[10]:
-
 
 classifiers_for_stacking = [
     KNeighborsClassifier(n_neighbors=opt_params["n_neighbors"]),
@@ -365,9 +339,6 @@ dump_metrics_without_cv(optimum_x_train_two, y_train_two, optimum_x_validation, 
 
 
 # ### 9. Generate ROC curves for the methods compared and combine these in a single plot. Comment on the accuracy results. Which methods give the best performance? Can you suggest other methods to further improve the accuracy?
-
-# In[11]:
-
 
 result_table = pd.DataFrame(columns=['classifiers', 'fpr','tpr','auc'])
 
@@ -416,14 +387,12 @@ plt.show()
 
 # ### 10. Train the method that gives the most accurate predictions so far (i.e. the highest overall accuracy) on the original train set after applying the best feature selection and normalization strategy and compute predictions on the samples of the test set(s) for which the true labels are available. Report the same accuracy measures as in step 5.
 
-# In[14]:
-
-
 clf = RandomForestClassifier(n_estimators=opt_params["rf_estimators"], random_state=42)
 
-optimum_x_train = best_selector.fit_transform(X_train, y=y_train)
-optimum_x_test = best_selector.fit_transform(X_test, y=y_test)
-optimum_x_test2 = best_selector.fit_transform(X_test2, y=y_test2)
+best_selector.fit(normalized_x_train, y=y_train)
+optimum_x_train = best_selector.transform(normalized_x_train)
+optimum_x_test = best_selector.transform(normalized_x_test)
+optimum_x_test2 = best_selector.transform(normalized_x_test2)
 
 clf.fit(optimum_x_train, y_train)
 
@@ -464,4 +433,4 @@ print("MCC of RandomForest with optimal hyperparameters on test set2: {}\n\n".fo
 # 
 # ## Methods implemented in the literature
 # 
-# Random Forest performed the best in the publications as well. Since this is a very well established problem, almost all methods that I have performed was already performed by other researchers. So, the results are very similiar because of that. I can definitely improve my methods using the tecniques implemented in the literature. For instance, I can use bootstrap sampling for evaluating just like in the first article. I could also optimize the parameters of linear discriminant analysis which gives a fairly good accuracy.
+# Random Forest performed the best in the publications as well. Since this is a very well established problem, almost all methods that I have performed was already performed by other researchers. So, the results are very similiar because of that. I can definitely improve my methods using the tecniques implemented in the literature. For instance, I can use bootstrap sampling for evaluating just like in the first article or I could take advantage of principle component analysis. I could also optimize the parameters of linear discriminant analysis which gives a fairly good accuracy.

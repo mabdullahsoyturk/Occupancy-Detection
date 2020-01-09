@@ -17,7 +17,7 @@ The models that were used:
 
 ## Installation
 
-Install requirements:
+In order to run the python file, you need to install the requirements:
 
 ```
 $ pip3 install -r ./requirements.txt

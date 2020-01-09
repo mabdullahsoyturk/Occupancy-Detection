@@ -3,4 +3,4 @@ numpy==1.16.4
 pandas==0.24.2
 seaborn==0.9.0
 mlxtend==0.17.0
-scikit_learn==0.22
+scikit_learn==0.22.1
